@@ -1,0 +1,128 @@
+# ---------------------------------------------------------------------------
+# DOCKER COMPOSE FILE FOR THE FULL ATLASSIAN STACK
+# ---------------------------------------------------------------------------
+# This compose file spins up containers for jira-software, confluence, bitbucket and bamboo.
+# Please note that the volume declarations are just copied from the respective Dockerfiles.
+# They're just added here to get all the important docker settings without additional lookup.
+#
+# Dockerfiles:
+# - https://github.com/docker-library/postgres/blob/master/9.6/Dockerfile 
+# - https://github.com/cptactionhank/docker-atlassian-jira-software/blob/7.2.2/Dockerfile
+# - https://github.com/cptactionhank/docker-atlassian-confluence/blob/5.10.7/Dockerfile
+# - https://github.com/cptactionhank/docker-atlassian-bitbucket/blob/4.10.0/Dockerfile
+# - https://github.com/cptactionhank/docker-atlassian-bamboo/blob/5.13.2/Dockerfile
+#
+# TODO before using this compose file:
+# - Change postgres/postgresql.conf
+# - Change CATALINA_OPTS in this file
+# - Check ports in this file 
+# - Star the repositories from https://github.com/cptactionhank
+#
+# TODO before updating any version number:
+# - Check volumes in new Dockerfile
+# - Check ports of new Dockerfile
+# - Update Dockerfile link in this file
+# - Upgrades still must be done by hand (!)
+# 
+# TODO after updating any version number:
+# - Share your changes via GitHub
+#
+# Thanks @ Martin Aksel Jensen for the beautiful Atlassian images
+# ---------------------------------------------------------------------------
+# PostgreSQL (with custom entrypoint)
+# ---------------------------------------------------------------------------
+version: '2'
+services:
+  postgres:
+    build: ./postgres/
+    volumes:
+        - /var/lib/postgresql/data 
+    environment: 
+      # Be creative
+      - POSTGRES_PASSWORD=Thanks
+      - JIRA_DB_PASSWORD=For
+      - CONFLUENCE_DB_PASSWORD=All
+      - BITBUCKET_DB_PASSWORD=The
+      - BAMBOO_DB_PASSWORD=Fish
+      # Default values
+      - JIRA_DB=jira
+      - JIRA_DB_USER=jira_cntr
+      - CONFLUENCE_DB=confluence
+      - CONFLUENCE_DB_USER=confluence_cntr
+      - BITBUCKET_DB=bitbucket
+      - BITBUCKET_DB_USER=bitbucket_cntr
+      - BAMBOO_DB=bamboo
+      - BAMBOO_DB_USER=bamboo_cntr
+    restart: always
+  # ---------------------------------------------------------------------------
+  # Jira-Software
+  # ---------------------------------------------------------------------------
+  jira:
+    image: cptactionhank/atlassian-jira-software:7.2.2
+    ports:
+      - 8080:8080
+    volumes:
+      - /var/atlassian/jira
+      - /opt/atlassian/jira/logs
+    environment:
+      - CATALINA_OPTS= -Xms256m -Xmx1g -Datlassian.plugins.enable.wait=300
+      - X_PROXY_NAME=<your-server-name>
+      - X_PROXY_PORT=443
+      - X_PROXY_SCHEME=https
+    links:
+      - postgres
+    restart: always
+  # ---------------------------------------------------------------------------
+  # Confluence
+  # ---------------------------------------------------------------------------
+  confluence:
+    image: cptactionhank/atlassian-confluence:5.10.8
+    ports:
+      - 8090:8090
+    volumes:
+      - /var/atlassian/confluence
+      - /opt/atlassian/confluence/logs
+    environment:
+      - CATALINA_OPTS= -Xms256m -Xmx1g -Datlassian.plugins.enable.wait=300
+      - X_PROXY_NAME=<your-server-name>
+      - X_PROXY_PORT=443
+      - X_PROXY_SCHEME=https
+    links:
+      - postgres
+    restart: always
+  # ---------------------------------------------------------------------------
+  # Bitbucket
+  # ---------------------------------------------------------------------------
+  bitbucket:
+    image: cptactionhank/atlassian-bitbucket:4.10.0
+    ports:
+      - 7990:7990
+      - 7999:7999
+    volumes:
+      - /var/atlassian/bitbucket
+      - /opt/atlassian/bitbucket/logs
+    environment:
+      - CATALINA_OPTS= -Xms256m -Xmx1g -Datlassian.plugins.enable.wait=300
+      - X_PROXY_NAME=<your-server-name>
+      - X_PROXY_PORT=443
+      - X_PROXY_SCHEME=https
+    links:
+      - postgres
+    restart: always
+  # ---------------------------------------------------------------------------
+  # Bamboo
+  # ---------------------------------------------------------------------------
+  bamboo:
+    image: cptactionhank/atlassian-bamboo:5.13.2
+    ports:
+      - 8085:8085
+      - 54663:54663
+    links:
+      - postgres
+    environment:
+      - CATALINA_OPTS= -Xms256m -Xmx1g -Datlassian.plugins.enable.wait=300
+      - X_PROXY_NAME=<your-server-name>
+      - X_PROXY_PORT=443
+      - X_PROXY_SCHEME=https
+    restart: always
+  # ---------------------------------------------------------------------------
