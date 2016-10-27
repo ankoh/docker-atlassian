@@ -12,20 +12,7 @@
 # - https://github.com/cptactionhank/docker-atlassian-bitbucket/blob/4.10.0/Dockerfile
 # - https://github.com/cptactionhank/docker-atlassian-bamboo/blob/5.13.2/Dockerfile
 #
-# TODO before using this compose file:
-# - Change postgres/postgresql.conf
-# - Change CATALINA_OPTS in this file
-# - Check ports in this file 
-# - Star the repositories from https://github.com/cptactionhank
-#
-# TODO before updating any version number:
-# - Check volumes in new Dockerfile
-# - Check ports of new Dockerfile
-# - Update Dockerfile link in this file
-# - Upgrades still must be done by hand (!)
-# 
-# TODO after updating any version number:
-# - Share your changes via GitHub
+# READ ALL FILES CAREFULLY BEFORE USING THIS COMPOSE FILE!
 #
 # Thanks @ Martin Aksel Jensen for the beautiful Atlassian images
 # ---------------------------------------------------------------------------

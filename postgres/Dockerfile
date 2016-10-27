@@ -1,8 +1,8 @@
 FROM postgres:9.5
 MAINTAINER Andre Kohn <andre@kohn.io>
 
-# Based on the official Postgres 9.6 Dockerfile
-# https://github.com/docker-library/postgres/blob/master/9.6/Dockerfile
+# Based on the official Postgres 9.5 Dockerfile
+# https://github.com/docker-library/postgres/blob/master/9.5/Dockerfile
 
 # Copy configuration
 COPY ./postgresql.conf /postgresql.conf
